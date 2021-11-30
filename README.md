@@ -33,5 +33,5 @@ associate with the server.
 
 # Note
 The server binaries inside the image are packaged inside a compressed archive
-that is unpacked the first time the image is run. This means that it will take a
-few minutes after the first run of the image before the server is usable.
+that is unpacked the first time the image is run. This means that it will take
+around 30 minutes after the first run of the image before the server is usable.
