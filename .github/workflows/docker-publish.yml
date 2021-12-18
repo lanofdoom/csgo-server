@@ -17,6 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Free up disk space
+        run: |
+          rm -rf /usr/share/dotnet
+          rm -rf /opt/ghc
+          rm -rf "/usr/local/share/boost"
+          rm -rf "$AGENT_TOOLSDIRECTORY"
+
       - name: Log into registry
         run: echo "$CR_PAT" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
