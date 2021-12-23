@@ -1,5 +1,7 @@
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_layer", "container_push")
-load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_extract")
+load("@io_bazel_rules_docker//docker/package_managers:download_pkgs.bzl", "download_pkgs")
+load("@io_bazel_rules_docker//docker/package_managers:install_pkgs.bzl", "install_pkgs")
+load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit", "container_run_and_commit_layer", "container_run_and_extract")
 
 #
 # Build Server Base Image
@@ -27,8 +29,8 @@ download_pkgs(
     name = "server_deps",
     image_tar = ":container_base_with_i386_packages.tar",
     packages = [
-        "lib32gcc-s1",
         "ca-certificates:i386",
+        "lib32gcc-s1",
         "libcurl4:i386",
     ],
 )
@@ -249,10 +251,9 @@ container_image(
     ],
     layers = [
         ":permissions_layer",
-        ":counter_strike_global_offensive_layer",
+        ":counter_strike_global_offensive",
         ":plugin_layer",
     ],
-    layers = [":"],
     user = "nobody",
 )
 
