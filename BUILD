@@ -2,6 +2,110 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image", "cont
 load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_extract")
 
 #
+# Build Server Base Image
+#
+
+container_run_and_extract(
+    name = "enable_i386_sources",
+    commands = [
+        "dpkg --add-architecture i386",
+    ],
+    extract_file = "/var/lib/dpkg/arch",
+    image = "@container_base//image",
+)
+
+container_image(
+    name = "container_base_with_i386_packages",
+    base = "@container_base//image",
+    directory = "/var/lib/dpkg",
+    files = [
+        ":enable_i386_sources/var/lib/dpkg/arch",
+    ],
+)
+
+download_pkgs(
+    name = "server_deps",
+    image_tar = ":container_base_with_i386_packages.tar",
+    packages = [
+        "lib32gcc-s1",
+        "ca-certificates:i386",
+        "libcurl4:i386",
+    ],
+)
+
+install_pkgs(
+    name = "server_base",
+    image_tar = ":container_base_with_i386_packages.tar",
+    installables_tar = ":server_deps.tar",
+    installation_cleanup_commands = "rm -rf /var/lib/apt/lists/*",
+    output_image_name = "server_base",
+)
+
+#
+# Build Counter-Strike: Source Layer
+#
+
+container_run_and_commit(
+    name = "prepare_steamcmd_repo",
+    commands = [
+        "sed -i -e's/ main/ main non-free/g' /etc/apt/sources.list",
+        "echo steam steam/question select 'I AGREE' | debconf-set-selections",
+        "echo steam steam/license note '' | debconf-set-selections",
+    ],
+    image = ":server_base.tar",
+)
+
+download_pkgs(
+    name = "steamcmd_deps",
+    image_tar = ":prepare_steamcmd_repo_commit.tar",
+    packages = [
+        "steamcmd:i386",
+        "xz-utils",
+    ],
+)
+
+install_pkgs(
+    name = "steamcmd_base",
+    image_tar = ":prepare_steamcmd_repo_commit.tar",
+    installables_tar = ":steamcmd_deps.tar",
+    installation_cleanup_commands = "rm -rf /var/lib/apt/lists/*",
+    output_image_name = "steamcmd_base",
+)
+
+container_run_and_extract(
+    name = "download_counter_strike_global_offensive",
+    commands = [
+        "/usr/games/steamcmd +login anonymous +force_install_dir /opt/game +app_update 740 validate +quit",
+        "rm /opt/steam/package/steam_cmd_linux.installed",
+        "rm -rf /opt/game/steamapps",
+        "chown -R nobody:root /opt/game",
+        "tar --remove-files --use-compress-program='xz -9T0' --mtime='1970-01-01' -cvf /csgo.tar.xz opt/game/",
+    ],
+    extract_file = "/csgo.tar.xz",
+    image = ":steamcmd_base.tar",
+)
+
+container_layer(
+    name = "counter_strike_global_offensive",
+    files = [
+        ":download_counter_strike_global_offensive/csgo.tar.xz",
+    ],
+)
+
+#
+# Set permissions in /opt
+#
+
+container_run_and_commit_layer(
+    name = "permissions_layer",
+    commands = [
+        "mkdir /opt/game",
+        "chown -R nobody:root /opt",
+    ],
+    image = "@container_base//image",
+)
+
+#
 # Build plugin layer
 #
 
@@ -31,7 +135,7 @@ container_layer(
 
 container_image(
     name = "plugin_image",
-    base = "@ubuntu//image",
+    base = "@container_base//image",
     directory = "/opt/game/csgo",
     layers = [
         ":customvotes_config",
@@ -102,7 +206,7 @@ container_layer(
 
 container_image(
     name = "configuration_image",
-    base = "@ubuntu//image",
+    base = "@container_base//image",
     layers = [
         ":cfg_config",
         ":root_config",
@@ -125,7 +229,7 @@ container_run_and_extract(
 
 container_image(
     name = "server_image",
-    base = "@server_base//image",
+    base = ":server_base",
     entrypoint = ["/entrypoint.sh"],
     env = {
         "CSGO_ADMIN": "",
@@ -138,14 +242,17 @@ container_image(
         "STEAM_API_KEY": "",
         "STEAM_GROUP_ID": "",
         "STEAM_SERVER_ACCOUNT": "",
-        "SV_LAN": "0",
-        "TZ": "America/Chicago",
     },
     files = [
         ":configuration/configuration.tar.gz",
         ":entrypoint.sh",
     ],
-    layers = [":plugin_layer"],
+    layers = [
+        ":permissions_layer",
+        ":counter_strike_global_offensive_layer",
+        ":plugin_layer",
+    ],
+    layers = [":"],
     user = "nobody",
 )
 

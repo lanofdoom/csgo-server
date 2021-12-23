@@ -25,6 +25,5 @@ fi
     +rcon_password "$RCON_PASSWORD" \
     +sv_password "$CSGO_PASSWORD" \
     +sv_setsteamaccount "$STEAM_SERVER_ACCOUNT" \
-    +sv_lan "$SV_LAN" \
     +sm_auth_by_steam_group_group_id "$STEAM_GROUP_ID" \
     +sm_auth_by_steam_group_steam_key "$STEAM_API_KEY"

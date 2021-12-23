@@ -29,8 +29,6 @@ use for the group membership checks with the Steam's Web API.
 [Steam server account](https://steamcommunity.com/dev/managegameservers) to
 associate with the server.
 
-``SV_LAN`` Controls if internet users can join the server. ``0`` by default.
-
 # Note
 The server binaries inside the image are packaged inside a compressed archive
 that is unpacked the first time the image is run. This means that it will take
