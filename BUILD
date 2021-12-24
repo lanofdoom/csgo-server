@@ -261,6 +261,6 @@ container_push(
     format = "Docker",
     image = ":server_image",
     registry = "ghcr.io",
-    repository = "lanofdoom/csgo-server/csgo-server",
+    repository = "lanofdoom/csgo-server",
     tag = "latest",
 )

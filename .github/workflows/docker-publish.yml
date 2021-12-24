@@ -22,7 +22,7 @@ jobs:
           rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "$CR_PAT" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build base image
         run: bazel run :push_server_image
