@@ -78,7 +78,6 @@ container_run_and_extract(
     name = "download_counter_strike_global_offensive",
     commands = [
         "/usr/games/steamcmd +login anonymous +force_install_dir /opt/game +app_update 740 validate +quit",
-        "rm /opt/steam/package/steam_cmd_linux.installed",
         "rm -rf /opt/game/steamapps",
         "chown -R nobody:root /opt/game",
         "tar --remove-files --use-compress-program='xz -9T0' --mtime='1970-01-01' -cvf /csgo.tar.xz opt/game/",
