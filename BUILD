@@ -32,6 +32,7 @@ download_pkgs(
         "ca-certificates:i386",
         "lib32gcc-s1",
         "libcurl4:i386",
+        "libstdc++6:i386",
     ],
 )
 
