@@ -150,14 +150,6 @@ container_layer(
 #
 
 container_layer(
-    name = "root_config",
-    directory = "/opt/game/csgo",
-    files = [
-        ":GameModes_Server.txt",
-    ],
-)
-
-container_layer(
     name = "cfg_config",
     directory = "/opt/game/csgo/cfg",
     files = [
@@ -173,7 +165,6 @@ container_image(
     base = "@container_base//image",
     layers = [
         ":cfg_config",
-        ":root_config",
     ],
 )
 
@@ -198,7 +189,7 @@ container_image(
     env = {
         "CSGO_ADMIN": "",
         "CSGO_HOSTNAME": "",
-        "CSGO_MAP_COLLECTION": "",
+        "CSGO_MAP_COLLECTION": "2704056164",
         "CSGO_MOTD": "",
         "CSGO_PASSWORD": "",
         "CSGO_PORT": "27015",
