@@ -32,7 +32,7 @@ download_pkgs(
         "ca-certificates:i386",
         "lib32gcc-s1",
         "libcurl4:i386",
-        "libstdc++6:i386",
+        "libstdc++6:i386", # Unique dependency for CS:GO Metamod
     ],
 )
 
@@ -111,39 +111,10 @@ container_run_and_commit_layer(
 # Build plugin layer
 #
 
-container_layer(
-    name = "customvotes_config",
-    directory = "/opt/game/csgo/addons/sourcemod/configs",
-    files = [
-        "customvotes.cfg",
-    ],
-)
-
-container_layer(
-    name = "customvotes_plugin",
-    directory = "/opt/game/csgo/addons/sourcemod/plugins/",
-    files = [
-        "@customvotes_nativevotes//file",
-    ],
-)
-
-container_layer(
-    name = "customvotes_phrases",
-    directory = "/opt/game/csgo/addons/sourcemod/translations/",
-    files = [
-        "@customvotes_phrases//file",
-    ],
-)
-
 container_image(
     name = "plugin_image",
     base = "@container_base//image",
     directory = "/opt/game/csgo",
-    layers = [
-        ":customvotes_config",
-        ":customvotes_plugin",
-        ":customvotes_phrases",
-    ],
     tars = [
         "@auth_by_steam_group//file",
         "@metamod//file",
@@ -158,10 +129,8 @@ container_run_and_extract(
         "mv basevotes.smx disabled/basevotes.smx",
         "mv funcommands.smx disabled/funcommands.smx",
         "mv funvotes.smx disabled/funvotes.smx",
+        "mv nextmap.smx disabled/nextmap.smx",
         "mv playercommands.smx disabled/playercommands.smx",
-        "mv disabled/mapchooser.smx mapchooser.smx",
-        "mv disabled/rockthevote.smx rockthevote.smx",
-        "mv disabled/nominations.smx nominations.smx",
         "chown -R nobody:root /opt",
         "tar -cf /archive.tar /opt",
     ],
@@ -185,7 +154,6 @@ container_layer(
     directory = "/opt/game/csgo",
     files = [
         ":GameModes_Server.txt",
-        ":subscribed_file_ids.txt",
     ],
 )
 
@@ -197,12 +165,6 @@ container_layer(
         ":cfg/gamemode_casual_server.cfg",
         ":cfg/gamemode_demolition_server.cfg",
         ":cfg/server.cfg",
-        ":cfg/start_armsrace.cfg",
-        ":cfg/start_casual.cfg",
-        ":cfg/start_casual_custom.cfg",
-        ":cfg/start_casual_small.cfg",
-        ":cfg/start_demolition.cfg",
-        ":cfg/start_flyingscoutsman.cfg",
     ],
 )
 
@@ -236,6 +198,7 @@ container_image(
     env = {
         "CSGO_ADMIN": "",
         "CSGO_HOSTNAME": "",
+        "CSGO_MAP_COLLECTION": "",
         "CSGO_MOTD": "",
         "CSGO_PASSWORD": "",
         "CSGO_PORT": "27015",

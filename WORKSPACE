@@ -38,22 +38,8 @@ container_pull(
 http_file(
     name = "auth_by_steam_group",
     downloaded_file_path = "auth_by_steam_group.tar.gz",
-    sha256 = "17b4d546075d75ee4cf7033e00e69b42fb295dc54b31c964e531f27ae91e5a48",
-    urls = ["https://lanofdoom.github.io/auth-by-steam-group/releases/v2.1.1/auth_by_steam_group.tar.gz"],
-)
-
-http_file(
-    name = "customvotes_nativevotes",
-    downloaded_file_path = "customvotes-nativevotes.smx",
-    sha256 = "500d4c441359cdd84cda3630d120c5679ec81753e15a411ba45ed0b96b17ffbb",
-    urls = ["https://forums.alliedmods.net/attachment.php?attachmentid=146725&d=1437545320"],
-)
-
-http_file(
-    name = "customvotes_phrases",
-    downloaded_file_path = "customvotes.phrases.txt",
-    sha256 = "8069fbe453319167c9c4e76d27320f05c148c1861e9fda4e89168e832a52a84d",
-    urls = ["https://forums.alliedmods.net/attachment.php?attachmentid=130686&d=1393706892"],
+    sha256 = "563b4f508373494ab3b26acccc9c9fcbd11b168ed85b7ee7447a5603627350a9",
+    urls = ["https://lanofdoom.github.io/auth-by-steam-group/releases/v2.1.2/auth_by_steam_group.tar.gz"],
 )
 
 http_file(

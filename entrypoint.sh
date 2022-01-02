@@ -18,9 +18,8 @@ fi
     -console \
     -usercon \
     -authkey "$STEAM_API_KEY" \
-    +exec start_armsrace \
     +ip 0.0.0.0 \
-    +map ar_baggage \
+    +host_workshop_collection "$CSGO_MAP_COLLECTION" \
     +hostname "$CSGO_HOSTNAME" \
     +rcon_password "$RCON_PASSWORD" \
     +sv_password "$CSGO_PASSWORD" \

@@ -10,6 +10,8 @@ Run ``docker pull ghcr.io/lanofdoom/csgo-server:latest``
 
 ``CSGO_PASSWORD`` The password users must enter in order to join the server.
 
+``CSGO_MAP_COLLECTION`` The workshop map collection to host on the server.
+
 ``CSGO_MOTD`` The MOTD to use for the server. Should be a URL to use for the
 server website link displayed in-game.
 
