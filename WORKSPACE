@@ -43,14 +43,15 @@ http_file(
 )
 
 http_file(
-    name = "sourcemod",
-    downloaded_file_path = "sourcemod.tar.gz",
-    urls = ["https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6502-linux.tar.gz"],
+    name = "metamod",
+    downloaded_file_path = "metamod.tar.gz",
+    sha256 = "b7fc903755bb3f273afd797b36e94844b828e721d291d2a7519eecad3fa8486c",
+    urls = ["https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz"],
 )
 
 http_file(
-    name = "metamod",
-    downloaded_file_path = "metamod.tar.gz",
-    sha256 = "2794c0e747b5e751a4335c8be8dce2e87907a1a3aa5313505ae7944c51630884",
-    urls = ["https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1143-linux.tar.gz"],
+    name = "sourcemod",
+    downloaded_file_path = "sourcemod.tar.gz",
+    sha256 = "da1fa6c77f3268b6eb8bbdb97e9bf1d03f4084b3f0d1933e195752b44332d3b0",
+    urls = ["https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6528-linux.tar.gz"],
 )
