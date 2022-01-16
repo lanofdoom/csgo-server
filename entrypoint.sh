@@ -10,7 +10,8 @@ fi
 
 [ -z "${CSGO_MOTD}" ] || echo "${CSGO_MOTD}" > /opt/game/csgo/motd.txt
 
-/opt/game/srcds_run \
+# Call srcds_linux instead of srcds_run to avoid restart logic
+LD_LIBRARY_PATH="/opt/game:/opt/game/bin:${LD_LIBRARY_PATH:-}" /opt/game/srcds_linux \
     -game csgo \
     -tickrate "$CSGO_TICKRATE" \
     -port "$CSGO_PORT" \

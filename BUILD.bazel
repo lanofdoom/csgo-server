@@ -1,0 +1,180 @@
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_layer", "container_push")
+load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_extract")
+load("@com_github_lanofdoom_steamlayer//:defs.bzl", "steam_depot_layer")
+
+alias(name="server_base", actual="@server_base_image//image:dockerfile_image.tar")
+
+#
+# Download application from Steam
+#
+
+steam_depot_layer(
+    name = "csgo_assets",
+    app = "740",
+    depot = "731",
+    directory = "/opt/game",
+    manifest = "9117528032893524446",
+)
+
+steam_depot_layer(
+    name = "csgo_server",
+    app = "740",
+    depot = "740",
+    directory = "/opt/game",
+    manifest = "8306228288369452594",
+)
+
+#
+# Build Sourcemod Layer
+#
+
+container_image(
+    name = "sourcemod_container",
+    base = ":server_base",
+    directory = "/opt/game/csgo",
+    tars = [
+        "@metamod//file",
+        "@sourcemod//file",
+    ],
+)
+
+container_run_and_extract(
+    name = "build_sourcemod",
+    commands = [
+        "cd /opt/game/csgo/addons/sourcemod",
+        "mv plugins/basevotes.smx plugins/disabled/basevotes.smx",
+        "mv plugins/funcommands.smx plugins/disabled/funcommands.smx",
+        "mv plugins/funvotes.smx plugins/disabled/funvotes.smx",
+        "mv plugins/playercommands.smx plugins/disabled/playercommands.smx",
+        "mv plugins/disabled/mapchooser.smx plugins/mapchooser.smx",
+        "mv plugins/disabled/rockthevote.smx plugins/rockthevote.smx",
+        "mv plugins/disabled/nominations.smx plugins/nominations.smx",
+        'sed -i /DisableAutoUpdate/s/no/yes/ configs/core.cfg',
+        "chown -R nobody:root /opt",
+        "tar -czvf /archive.tar.gz /opt",
+    ],
+    extract_file = "/archive.tar.gz",
+    image = ":sourcemod_container.tar",
+)
+
+container_layer(
+    name = "sourcemod",
+    tars = [
+        ":build_sourcemod/archive.tar.gz",
+    ],
+)
+
+#
+# Build LAN of DOOM Plugin and Config Layer
+#
+
+container_layer(
+    name = "lanofdoom_server_config",
+    directory = "/opt/game/csgo/cfg",
+    files = [
+        ":cfg/gamemode_armsrace_server.cfg",
+        ":cfg/gamemode_casual_server.cfg",
+        ":cfg/gamemode_demolition_server.cfg",
+        ":cfg/server.cfg",
+    ],
+)
+
+container_layer(
+    name = "lanofdoom_server_entrypoint",
+    directory = "/opt/game",
+    files = [
+        ":entrypoint.sh",
+    ],
+)
+
+container_layer(
+    name = "lanofdoom_server_plugins",
+    directory = "/opt/game/csgo",
+    tars = [
+        "@auth_by_steam_group//file",
+        "@deathmatch//file",
+        "@map_settings//file",
+        "@max_cash//file",
+    ],
+)
+
+container_image(
+    name = "config_container",
+    base = ":server_base",
+    layers = [
+        ":lanofdoom_server_config",
+        ":lanofdoom_server_entrypoint",
+        ":lanofdoom_server_plugins",
+    ],
+)
+
+container_run_and_extract(
+    name = "build_lanofdoom",
+    commands = [
+        "chown -R nobody:root /opt",
+        "tar -czvf /archive.tar.gz /opt",
+    ],
+    extract_file = "/archive.tar.gz",
+    image = ":config_container.tar",
+)
+
+container_layer(
+    name = "lanofdoom",
+    tars = [
+        ":build_lanofdoom/archive.tar.gz",
+    ],
+)
+
+#
+# Build configuration layer
+#
+
+# Build Final Image and Push
+#
+
+container_image(
+    name = "server_image",
+    base = ":server_base",
+    entrypoint = ["/opt/game/entrypoint.sh"],
+    env = {
+        "CSGO_ADMIN": "",
+        "CSGO_HOSTNAME": "",
+        "CSGO_MAP_COLLECTION": "2704056164",
+        "CSGO_MOTD": "",
+        "CSGO_PASSWORD": "",
+        "CSGO_PORT": "27015",
+        "CSGO_TICKRATE": "128",
+        "RCON_PASSWORD": "",
+        "STEAM_API_KEY": "",
+        "STEAM_GROUP_ID": "",
+        "STEAM_SERVER_ACCOUNT": "",
+    },
+    layers = [
+        ":csgo_server",
+        ":csgo_assets",
+        ":sourcemod",
+        ":lanofdoom_server_config",
+        ":lanofdoom_server_plugins",
+        ":lanofdoom_server_entrypoint",
+    ],
+    workdir = "/opt/game",
+    symlinks = {"/root/.steam/sdk32/steamclient.so":"/opt/game/bin/steamclient.so"}
+)
+
+container_push(
+    name = "push_server_image",
+    format = "Docker",
+    image = ":server_image",
+    registry = "ghcr.io",
+    repository = "lanofdoom/csgo-server",
+    tag = "latest",
+)
+
+container_push(
+    name = "push_pk",
+    format = "Docker",
+    image = ":server_image",
+    registry = "registry.kleinpa.net",
+    repository = "lanofdoom/csgo-server",
+    tag = "latest",
+)
