@@ -26,14 +26,14 @@ jobs:
       
       - name: Make workspace
         run: |
-          fallocate -l 40G workspace.img
+          fallocate -l 30G workspace.img
           mkfs.btrfs workspace.img
-          mkdir -p ~/.cache/bazel
+          mkdir -p /home/runner/.cache/bazel
 
       - name: Mount workspace
         run: |
           sudo mount -o compress=zstd:15 workspace.img ~/.cache/bazel
-          sudo chmod -R 777 ~/.cache/bazel
+          sudo chmod -R 777 /home/runner/.cache/bazel
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
