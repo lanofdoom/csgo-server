@@ -1,3 +1,4 @@
+
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 http_archive(
@@ -21,15 +22,27 @@ container_deps()
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 #
-# Container Base Image
+# Steam Dependencies
 #
 
-container_pull(
-    name = "container_base",
-    registry = "index.docker.io",
-    repository = "library/debian",
-    tag = "bullseye",
+http_archive(
+    name = "com_github_lanofdoom_steamcmd",
+    sha256 = "ba08a3cea3b1534bee6a6b1e625f34aa3c019d6f0cfb9bdeeade201f250776a1",
+    strip_prefix = "steamcmd-bbeb7373f047aa3271d9f3442bc7985a6049f879",
+    urls = ["https://github.com/lanofdoom/steamcmd/archive/bbeb7373f047aa3271d9f3442bc7985a6049f879.zip"],
 )
+
+load("@com_github_lanofdoom_steamcmd//:repositories.bzl", "steamcmd_repos")
+
+steamcmd_repos()
+
+load("@com_github_lanofdoom_steamcmd//:deps.bzl", "steamcmd_deps")
+
+steamcmd_deps()
+
+load("@com_github_lanofdoom_steamcmd//:nugets.bzl", "steamcmd_nugets")
+
+steamcmd_nugets()
 
 #
 # Server Dependencies
@@ -54,4 +67,15 @@ http_file(
     downloaded_file_path = "sourcemod.tar.gz",
     sha256 = "da1fa6c77f3268b6eb8bbdb97e9bf1d03f4084b3f0d1933e195752b44332d3b0",
     urls = ["https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6528-linux.tar.gz"],
+)
+
+#
+# Container Base Image
+#
+
+container_pull(
+    name = "base_image",
+    registry = "index.docker.io",
+    repository = "i386/debian",
+    tag = "bullseye-slim",
 )

@@ -1,18 +1,13 @@
 #!/bin/bash -ue
 
-if [ ! -e /opt/game/srcds_run ]
-then
-    tar -xf csgo.tar.xz
-    tar -xf configuration.tar.gz
-fi
-
 [ -z "${CSGO_ADMIN}" ] || echo "${CSGO_ADMIN} \"99:z\"" > /opt/game/csgo/addons/sourcemod/configs/admins_simple.ini
 
 [ -z "${CSGO_MOTD}" ] || echo "${CSGO_MOTD}" > /opt/game/csgo/motd.txt
 
-/opt/game/srcds_run \
+# Call srcds_linux instead of srcds_run to avoid restart logic
+LD_LIBRARY_PATH="/opt/game:/opt/game/bin:${LD_LIBRARY_PATH:-}" /opt/game/srcds_linux \
     -game csgo \
-    -tickrate "$CSGO_TICKRATE" \
+    -tickrate 128 \
     -port "$CSGO_PORT" \
     -strictbindport \
     -console \

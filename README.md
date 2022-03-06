@@ -18,8 +18,6 @@ server website link displayed in-game.
 
 ``CSGO_PORT`` The port to use for the server. ``27015`` by default.
 
-``CSGO_TICKRATE`` The tickrate to use for the server. ``128`` by default.
-
 ``RCON_PASSWORD`` The rcon password for the server.
 
 ``STEAM_GROUP_ID`` The Steam group to use for the allowlist of users joining the
