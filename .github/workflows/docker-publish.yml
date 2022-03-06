@@ -26,7 +26,7 @@ jobs:
       
       - name: Make workspace
         run: |
-          fallocate -l 45G workspace.img
+          fallocate -l 42G workspace.img
           mkfs.btrfs workspace.img
           mkdir -p ~/.cache/bazel
 
