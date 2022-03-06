@@ -22,7 +22,7 @@ jobs:
           rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Install dependencies
-        run: apt install -y btrfs-progs
+        run: sudo apt install -y btrfs-progs
       
       - name: Make workspace
         run: |
@@ -31,7 +31,7 @@ jobs:
           mkdir -p ~/.cache/bazel
 
       - name: Mount workspace
-        run: mount -o compress=zstd:15 workspace.img ~/.cache/bazel
+        run: sudo mount -o compress=zstd:15 workspace.img ~/.cache/bazel
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
