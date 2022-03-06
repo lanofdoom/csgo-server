@@ -21,13 +21,17 @@ jobs:
           rm -rf "/usr/local/share/boost"
           rm -rf "$AGENT_TOOLSDIRECTORY"
 
-      - name: Create compressed workspace
+      - name: Install dependencies
+        run: apt install -y btrfs-progs
+      
+      - name: Make workspace
         run: |
-          apt update && apt install -y btrfs-progs
-          fallocate -l 50G workspace.img
+          fallocate -l 30G workspace.img
           mkfs.btrfs workspace.img
           mkdir -p ~/.cache/bazel
-          mount -o compress=zstd:15 workspace.img ~/.cache/bazel
+
+      - name: Mount workspace
+        run: mount -o compress=zstd:15 workspace.img ~/.cache/bazel
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
