@@ -21,17 +21,12 @@ jobs:
           rm -rf "/usr/local/share/boost"
           rm -rf "$AGENT_TOOLSDIRECTORY"
 
-      - name: Install dependencies
-        run: sudo apt install -y btrfs-progs
-      
-      - name: Make workspace
+      - name: Make compressed workspace
         run: |
-          fallocate -l 30G workspace.img
+          sudo apt install -y btrfs-progs
+          fallocate -l 39G workspace.img
           mkfs.btrfs workspace.img
           mkdir -p /home/runner/.cache/bazel
-
-      - name: Mount workspace
-        run: |
           sudo mount -o compress=zstd:15 workspace.img ~/.cache/bazel
           sudo chmod -R 777 /home/runner/.cache/bazel
 
