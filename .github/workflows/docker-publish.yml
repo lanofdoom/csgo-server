@@ -18,13 +18,14 @@ jobs:
         run: |
           rm -rf /usr/share/dotnet
           rm -rf /opt/ghc
-          rm -rf "/usr/local/share/boost"
+          rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android
           rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Make compressed workspace
         run: |
           sudo apt install -y btrfs-progs
-          fallocate -l 39G workspace.img
+          fallocate -l 50G workspace.img
           mkfs.btrfs workspace.img
           mkdir -p /home/runner/.cache/bazel
           sudo mount -o compress=zstd:15 workspace.img ~/.cache/bazel
