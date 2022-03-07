@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Free up disk space
         run: |
+          sudo rm -rf /usr/local/lib/android
+          rm -rf /usr/share/dotnet
+          rm -rf /opt/ghc
+          rm -rf /usr/local/share/boost
           rm -rf "$AGENT_TOOLSDIRECTORY"
 
       - name: Maximize build space
@@ -21,16 +25,13 @@ jobs:
         with:
           root-reserve-mb: 512
           swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
 
       - uses: actions/checkout@v2
 
       - name: Make compressed workspace
         run: |
           sudo apt install -y btrfs-progs
-          fallocate -l 80G workspace.img
+          fallocate -l 64G workspace.img
           mkfs.btrfs workspace.img
           mkdir -p /home/runner/.cache/bazel
           sudo mount -o compress=zstd:15 workspace.img ~/.cache/bazel
