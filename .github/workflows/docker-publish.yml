@@ -15,30 +15,59 @@ jobs:
       - name: Free up disk space
         run: |
           sudo rm -rf /usr/local/lib/android
-          rm -rf /usr/share/dotnet
-          rm -rf /opt/ghc
-          rm -rf /usr/local/share/boost
-          rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo swapoff -a
+          sudo rm -f /mnt/swapfile
 
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 512
-          swap-size-mb: 1024
-
-      - uses: actions/checkout@v2
-
-      - name: Make compressed workspace
+      - name: Install dependencies
         run: |
           sudo apt install -y btrfs-progs
-          fallocate -l 64G workspace.img
-          mkfs.btrfs workspace.img
-          mkdir -p /home/runner/.cache/bazel
-          sudo mount -o compress=zstd:15 workspace.img ~/.cache/bazel
-          sudo chmod -R 777 /home/runner/.cache/bazel
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Maximize workspace size
+        run: |
+          ROOT_RESERVE_MB=512
+          ROOT_RESERVE_KB=$(expr $ROOT_RESERVE_MB \* 1024)
+          ROOT_FREE_KB=$(df --block-size=1024 --output=avail / | tail -1)
+          ROOT_LVM_SIZE_KB=$(expr $ROOT_FREE_KB - $ROOT_RESERVE_KB)
+          ROOT_LVM_SIZE_BYTES=$(expr $ROOT_LVM_SIZE_KB \* 1024)
+
+          echo "Creating LVM PV on root fs"
+          echo "  Creating LVM PV on root fs."
+          sudo touch "/pv.img" && sudo fallocate -z -l "${ROOT_LVM_SIZE_BYTES}" "/pv.img"
+          export ROOT_LOOP_DEV=$(sudo losetup --find --show "/pv.img")
+          sudo pvcreate -f "${ROOT_LOOP_DEV}"
+
+          TMP_RESERVE_MB=128
+          TMP_RESERVE_KB=$(expr $TMP_RESERVE_MB \* 1024)
+          TMP_FREE_KB=$(df --block-size=1024 --output=avail /mnt | tail -1)
+          TMP_LVM_SIZE_KB=$(expr $TMP_FREE_KB - $TMP_RESERVE_KB)
+          TMP_LVM_SIZE_BYTES=$(expr $TMP_LVM_SIZE_KB \* 1024)
+
+          echo "Creating LVM PV on temp fs."
+          sudo touch "/mnt/tmp-pv.img" && sudo fallocate -z -l "${TMP_LVM_SIZE_BYTES}" "/mnt/tmp-pv.img"
+          export TMP_LOOP_DEV=$(sudo losetup --find --show "/mnt/tmp-pv.img")
+          sudo pvcreate -f "${TMP_LOOP_DEV}"
+
+          echo "Creating volume group."
+          VG_NAME=buildvg
+          sudo vgcreate "${VG_NAME}" "${TMP_LOOP_DEV}" "${ROOT_LOOP_DEV}"
+
+          echo "Creating build volume"
+          # create and mount build volume
+          sudo lvcreate -l 100%FREE -n buildlv "${VG_NAME}"
+          sudo mkfs.btrfs "/dev/mapper/${VG_NAME}-buildlv"
+          sudo mount -o compress=zstd:15 "/dev/mapper/${VG_NAME}-buildlv" "${GITHUB_WORKSPACE}"
+          sudo chown -R runner "${GITHUB_WORKSPACE}"
+          sudo chgrp -R runner "${GITHUB_WORKSPACE}"
+
+      - uses: actions/checkout@v2
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build base image
-        run: bazel run :push_server_image
+        run: bazel --output_user_root=${GITHUB_WORKSPACE}/bazel-cache run :push_server_image
