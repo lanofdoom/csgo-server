@@ -51,8 +51,15 @@ steamcmd_nugets()
 http_file(
     name = "auth_by_steam_group",
     downloaded_file_path = "auth_by_steam_group.tar.gz",
-    sha256 = "563b4f508373494ab3b26acccc9c9fcbd11b168ed85b7ee7447a5603627350a9",
-    urls = ["https://lanofdoom.github.io/auth-by-steam-group/releases/v2.1.2/auth_by_steam_group.tar.gz"],
+    sha256 = "2b912b1df5331cf58868df283fdcf3e226b7a50e0a2170f7fd0d0581b18b1fdc",
+    urls = ["https://lanofdoom.github.io/auth-by-steam-group/releases/v2.2.0/auth_by_steam_group.tar.gz"],
+)
+
+http_file(
+    name = "map_settings",
+    downloaded_file_path = "map_settings.tar.gz",
+    sha256 = "5f361ce4d61f1be427023f53d1b24671d7ef63c3b4ef7999d25fc0a50478fa03",
+    urls = ["https://lanofdoom.github.io/csgo-map-settings/releases/v1.0.0/lan_of_doom_map_settings.tar.gz"],
 )
 
 http_file(
@@ -65,8 +72,8 @@ http_file(
 http_file(
     name = "sourcemod",
     downloaded_file_path = "sourcemod.tar.gz",
-    sha256 = "da1fa6c77f3268b6eb8bbdb97e9bf1d03f4084b3f0d1933e195752b44332d3b0",
-    urls = ["https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6528-linux.tar.gz"],
+    sha256 = "9f59ddf32a649695e4c7dac0dfebdc382590486e60ff6473d7b87a31b6bfa01b",
+    urls = ["https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6529-linux.tar.gz"],
 )
 
 #

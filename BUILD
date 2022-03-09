@@ -19,7 +19,7 @@ steam_depot_layer(
 
 container_layer(
     name = "metamod",
-    directory = "/opt/game/cstrike",
+    directory = "/opt/game/csgo",
     tars = [
         "@metamod//file",
     ],
@@ -31,7 +31,7 @@ container_layer(
 
 container_layer(
     name = "sourcemod",
-    directory = "/opt/game/cstrike",
+    directory = "/opt/game/csgo",
     tars = [
         "@sourcemod//file",
     ],
@@ -43,23 +43,37 @@ container_layer(
 
 container_layer(
     name = "authorization",
-    directory = "/opt/game/cstrike",
+    directory = "/opt/game/csgo",
     tars = [
         "@auth_by_steam_group//file",
     ],
 )
 
 #
-# Build configuration layer
+# Plugins Layers
 #
 
 container_layer(
-    name = "configuration",
+    name = "plugins",
+    directory = "/opt/game/csgo",
+    tars = [
+        "@map_settings//file",
+    ],
+)
+
+#
+# Config Layer
+#
+
+container_layer(
+    name = "config",
     directory = "/opt/game/csgo/cfg",
     files = [
         ":cfg/gamemode_armsrace_server.cfg",
         ":cfg/gamemode_casual_server.cfg",
+        ":cfg/gamemode_cooperative_server.cfg",
         ":cfg/gamemode_demolition_server.cfg",
+        ":cfg/gamemode_survival_server.cfg",
         ":cfg/server.cfg",
     ],
 )
@@ -96,7 +110,7 @@ container_image(
     env = {
         "CSGO_ADMIN": "",
         "CSGO_HOSTNAME": "",
-        "CSGO_MAP_COLLECTION": "2704056164",
+        "CSGO_MAP": "de_dust2",
         "CSGO_MOTD": "",
         "CSGO_PASSWORD": "",
         "CSGO_PORT": "27015",
@@ -113,8 +127,12 @@ container_image(
         ":metamod",
         ":sourcemod",
         ":authorization",
-        ":configuration",
+        ":plugins",
+        ":config",
     ],
+    symlinks = {
+        "/root/.steam/sdk32/steamclient.so": "/opt/game/bin/steamclient.so"
+    },
 )
 
 container_push(

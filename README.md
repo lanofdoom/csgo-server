@@ -5,13 +5,18 @@ Offensive server as used by the LAN of DOOM.
 # Installation
 Run ``docker pull ghcr.io/lanofdoom/csgo-server:latest``
 
+# Installed Addons
+* LAN of DOOM Authenticate by Steam Group
+* LAN of DOOM Map Settings
+* MetaMod:Source
+* SourceMod
+
 # Environmental Variables
 ``CSGO_HOSTNAME`` The name of the server as listed in Valve's server browser.
 
 ``CSGO_PASSWORD`` The password users must enter in order to join the server.
 
-``CSGO_MAP_COLLECTION`` The workshop map collection to host on the server.
-``2704056164`` by default.
+``CSGO_MAP`` The first map to run on the server. ``de_dust2`` by default.
 
 ``CSGO_MOTD`` The MOTD to use for the server. Should be a URL to use for the
 server website link displayed in-game.
@@ -29,8 +34,3 @@ use for the group membership checks with the Steam's Web API.
 ``STEAM_SERVER_ACCOUNT`` The
 [Steam server account](https://steamcommunity.com/dev/managegameservers) to
 associate with the server.
-
-# Note
-The server binaries inside the image are packaged inside a compressed archive
-that is unpacked the first time the image is run. This means that it will take
-around 30 minutes after the first run of the image before the server is usable.

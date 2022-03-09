@@ -1,8 +1,17 @@
 #!/bin/bash -ue
 
-[ -z "${CSGO_ADMIN}" ] || echo "${CSGO_ADMIN} \"99:z\"" > /opt/game/csgo/addons/sourcemod/configs/admins_simple.ini
-
 [ -z "${CSGO_MOTD}" ] || echo "${CSGO_MOTD}" > /opt/game/csgo/motd.txt
+
+# Generate mapcycle here to cut down on image build time and space usage.
+ls /opt/game/csgo/maps/*.bsp | grep -v -e training1 -e lobby_mapveto -e gd_ | sed -e 's/.*\/\([^\/]*\).bsp/\1/' > /opt/game/csgo/mapcycle.txt
+
+# Touch this file to workaround an issue in sourcemod
+touch /opt/game/csgo/addons/sourcemod/configs/maplists.cfg
+
+# Touch these files to prevent sourcemod from creating them and overriding
+# values sent in server.cfg
+touch /opt/game/csgo/cfg/sourcemod/mapchooser.cfg
+touch /opt/game/csgo/cfg/sourcemod/rtv.cfg
 
 # Call srcds_linux instead of srcds_run to avoid restart logic
 LD_LIBRARY_PATH="/opt/game:/opt/game/bin:${LD_LIBRARY_PATH:-}" /opt/game/srcds_linux \
@@ -14,7 +23,7 @@ LD_LIBRARY_PATH="/opt/game:/opt/game/bin:${LD_LIBRARY_PATH:-}" /opt/game/srcds_l
     -usercon \
     -authkey "$STEAM_API_KEY" \
     +ip 0.0.0.0 \
-    +host_workshop_collection "$CSGO_MAP_COLLECTION" \
+    +map "$CSGO_MAP" \
     +hostname "$CSGO_HOSTNAME" \
     +rcon_password "$RCON_PASSWORD" \
     +sv_password "$CSGO_PASSWORD" \
