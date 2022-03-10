@@ -58,8 +58,22 @@ http_file(
 http_file(
     name = "map_settings",
     downloaded_file_path = "map_settings.tar.gz",
-    sha256 = "5f361ce4d61f1be427023f53d1b24671d7ef63c3b4ef7999d25fc0a50478fa03",
-    urls = ["https://lanofdoom.github.io/csgo-map-settings/releases/v1.0.0/lan_of_doom_map_settings.tar.gz"],
+    sha256 = "22ea7a233e3c7e77eb1358131dc51731e14fd0cecceed35510a82a57570f755c",
+    urls = ["https://lanofdoom.github.io/csgo-map-settings/releases/v1.1.0/lan_of_doom_map_settings.tar.gz"],
+)
+
+http_file(
+    name = "maps",
+    downloaded_file_path = "maps.tar.xz",
+    sha256 = "8c9b5336be06143528e5f853bc3b91dc1e4745357105ce6abc04dc37788a0a29",
+    urls = ["https://lanofdoom.github.io/csgo-maps/releases/v1.0.0/maps.tar.xz"],
+)
+
+http_file(
+    name = "maps_bz2",
+    downloaded_file_path = "maps_bz2.tar.xz",
+    sha256 = "f07b24dcd2bc54292c265eef6f473b9322f736ce21b61da47093afbfee7f3210",
+    urls = ["https://lanofdoom.github.io/csgo-maps/releases/v1.0.0/maps_bz2.tar.xz"],
 )
 
 http_file(

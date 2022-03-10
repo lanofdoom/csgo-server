@@ -1,0 +1,7 @@
+# Note, only add files to this list of the actual creator of the map is the one
+# who uploaded it to the Steam workshop. All other maps should be added to the
+# map archive.
+125621707 # aim_deagle7k
+258081127 # fy_iceworld
+122521875 # fy_pool_day
+649554586 # scoutzknivez

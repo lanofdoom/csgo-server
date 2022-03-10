@@ -14,6 +14,19 @@ steam_depot_layer(
 )
 
 #
+# Maps Layer
+#
+
+container_layer(
+    name = "maps",
+    directory = "/opt/game/csgo",
+    tars = [
+        "@maps//file",
+        "@maps_bz2//file",
+    ],
+)
+
+#
 # MetaMod Layer
 #
 
@@ -58,6 +71,18 @@ container_layer(
     directory = "/opt/game/csgo",
     tars = [
         "@map_settings//file",
+    ],
+)
+
+#
+# Workshop Layer
+#
+
+container_layer(
+    name = "workshop",
+    directory = "/opt/game/csgo",
+    files = [
+        ":subscribed_file_ids.txt",
     ],
 )
 
@@ -124,10 +149,12 @@ container_image(
     ],
     layers = [
         ":counter_strike_global_offensive",
+        ":maps",
         ":metamod",
         ":sourcemod",
         ":authorization",
         ":plugins",
+        ":workshop",
         ":config",
     ],
     symlinks = {
