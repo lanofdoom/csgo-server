@@ -87,11 +87,11 @@ container_layer(
 )
 
 #
-# Config Layer
+# Game Mode Config Layer
 #
 
 container_layer(
-    name = "config",
+    name = "gamemode_configs",
     directory = "/opt/game/csgo/cfg",
     files = [
         ":cfg/gamemode_armsrace_server.cfg",
@@ -99,6 +99,17 @@ container_layer(
         ":cfg/gamemode_cooperative_server.cfg",
         ":cfg/gamemode_demolition_server.cfg",
         ":cfg/gamemode_survival_server.cfg",
+    ],
+)
+
+#
+# Server Config Layer
+#
+
+container_layer(
+    name = "server_config",
+    directory = "/opt/game/csgo/cfg/templates",
+    files = [
         ":cfg/server.cfg",
     ],
 )
@@ -155,7 +166,8 @@ container_image(
         ":authorization",
         ":plugins",
         ":workshop",
-        ":config",
+        ":gamemode_configs",
+        ":server_config",
     ],
     symlinks = {
         "/root/.steam/sdk32/steamclient.so": "/opt/game/bin/steamclient.so"

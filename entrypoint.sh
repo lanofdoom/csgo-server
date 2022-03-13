@@ -19,6 +19,11 @@ touch /opt/game/csgo/addons/sourcemod/configs/maplists.cfg
 touch /opt/game/csgo/cfg/sourcemod/mapchooser.cfg
 touch /opt/game/csgo/cfg/sourcemod/rtv.cfg
 
+# Update server config file
+cp /opt/game/csgo/cfg/templates/server.cfg /opt/game/csgo/cfg/server.cfg
+echo "// Added by entrypoint.sh" >> /opt/game/csgo/cfg/server.cfg
+echo "hostname \"$CSGO_HOSTNAME\"" >> /opt/game/csgo/cfg/server.cfg
+
 # Call srcds_linux instead of srcds_run to avoid restart logic
 LD_LIBRARY_PATH="/opt/game:/opt/game/bin:${LD_LIBRARY_PATH:-}" /opt/game/srcds_linux \
     -game csgo \
@@ -29,7 +34,6 @@ LD_LIBRARY_PATH="/opt/game:/opt/game/bin:${LD_LIBRARY_PATH:-}" /opt/game/srcds_l
     -usercon \
     -authkey "$STEAM_API_KEY" \
     +ip 0.0.0.0 \
-    +hostname "$CSGO_HOSTNAME" \
     +map "$CSGO_MAP" \
     +rcon_password "$RCON_PASSWORD" \
     +sv_password "$CSGO_PASSWORD" \
